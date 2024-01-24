@@ -48,3 +48,42 @@ func CreateBlockchain(difficulty int) Blockchain {
 		difficulty,
 	}
 }
+
+func (b *Blockchain) addBlock(from, to string, amount float64) {
+	blockData := map[string]interface{}{
+		"from":   from,
+		"to":     to,
+		"amount": amount,
+	}
+	lastBlock := b.chain[len(b.chain)-1]
+	newBlock := Block{
+		data:      blockData,
+		prevHash:  lastBlock.hash,
+		timestamp: time.Now(),
+	}
+	newBlock.mineBlock(b.difficulty)
+	b.chain = append(b.chain, newBlock)
+}
+
+func (b Blockchain) isValid() bool {
+	for i := range b.chain[i] {
+		previousBlock := b.chain[i]
+		currentBlock := b.chain[i+1]
+		if currentBlock.hash != currentBlock.calculateHash() || currentBlock.prevHash != previousBlock.hash {
+			return false
+		}
+	}
+	return true
+}
+
+func main() {
+	// Create a new blockchain instance with a mining difficulty of 2
+	blockchain := CreateBlockchain(2)
+
+	// Record transactions for Tom, Dick and Harry
+	blockchain.addBlock("Tom", "Dick", 10)
+	blockchain.addBlock("Dick", "Harry", 5)
+
+	// Check validity of blockchain
+	fmt.Println(blockchain.isValid())
+}
